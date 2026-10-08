@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestión y Ficha Técnica de Personal - C.E. Zazarabicoa</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+</head>
+<body>
+  <!-- PANTALLA DE ACCESO Y SEGURIDAD CON CONTRASEÑA -->
+  <div id="loginOverlay" class="login-overlay">
+    <div class="login-card" id="loginCard">
+      <img id="loginLogoImg" class="login-logo" src="assets/logo.png" alt="Escudo CE Zazarabicoa">
+      <h2 class="login-title">COMPLEJO EDUCATIVO "ZAZARABICOA"</h2>
+      <p class="login-subtitle">Sistema de Control y Expediente de Personal Escolar</p>
+
+      <form id="loginForm" class="login-form">
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">
+            <span>Contraseña de Acceso Institucional</span>
+          </label>
+          <div class="password-input-wrap">
+            <input type="password" id="loginPassword" class="form-control" placeholder="Ingrese la contraseña" autocomplete="current-password" required>
+            <button type="button" class="btn-toggle-pwd" id="btnTogglePassword" title="Mostrar/Ocultar contraseña">
+              👁️
+            </button>
+          </div>
+        </div>
+
+        <div id="loginErrorMsg" class="login-error-msg">
+          ❌ Contraseña incorrecta. Por favor intente nuevamente.
+        </div>
+
+        <button type="submit" class="btn btn-primary login-btn" id="btnLoginSubmit">
+          🔓 Ingresar al Sistema
+        </button>
+      </form>
+
+      <div class="login-footer-text">
+        🔒 Acceso restringido exclusivamente a Personal Directivo y Administrativo
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ENCABEZADO PRINCIPAL DE LA APLICACIÓN -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-wrapper">
+        <img id="brandLogo" class="brand-logo-img" src="assets/logo.png" alt="Escudo CE Zazarabicoa 1946">
+        <div class="brand-info">
+          <h1>COMPLEJO EDUCATIVO "ZAZARABICOA"</h1>
+          <p>Sistema de Registro de Personal Escolar y Emisión de Ficha Técnica (Hoja Carta / PDF)</p>
+        </div>
+      </div>
+      <nav class="header-nav">
+        <button class="nav-tab-btn active" data-tab="tab-formulario">
+          ✏️ Registrar Personal
+        </button>
+        <button class="nav-tab-btn" data-tab="tab-directorio">
+          📋 Directorio de Personal
+          <span id="badgeTotalCount" class="badge-count">0</span>
+        </button>
+        <button class="nav-tab-btn" id="btnLockSession" title="Bloquear y salir del sistema" style="background: rgba(239, 68, 68, 0.15); color: #fca5a5;">
+          🔒 Bloquear
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-wrapper">
+
+    <!-- ========================================== -->
+    <!-- PESTAÑA 1: FORMULARIO DE REGISTRO / EDICIÓN -->
+    <!-- ========================================== -->
+    <div id="tab-formulario" class="tab-pane active">
+      <form id="personalForm">
+        
+        <!-- SECCIÓN 1: DATOS PERSONALES -->
+        <div class="card-box">
+          <div class="card-title">
+            <span class="icon">👤</span>
+            <span id="formModeTitle">Registrar Nuevo Funcionario</span>
+          </div>
+
+          <div class="form-grid">
+            <!-- Nombres -->
+            <div class="form-group">
+              <label class="form-label" for="nombres">Nombres <span class="required">*</span></label>
+              <input type="text" id="nombres" class="form-control" placeholder="Ej: María Elena" required>
+            </div>
+
+            <!-- Apellidos -->
+            <div class="form-group">
+              <label class="form-label" for="apellidos">Apellidos <span class="required">*</span></label>
+              <input type="text" id="apellidos" class="form-control" placeholder="Ej: García Peña" required>
+            </div>
+
+            <!-- Cédula de Identidad -->
+            <div class="form-group">
+              <label class="form-label" for="cedula">Cédula de Identidad <span class="required">*</span></label>
+              <div class="input-group">
+                <select id="nacionalidad" class="input-group-addon" style="border-right: none; outline: none; cursor: pointer;">
+                  <option value="V">V-</option>
+                  <option value="E">E-</option>
+                </select>
+                <input type="text" id="cedula" class="form-control" placeholder="Ej: 14.528.910" required>
+              </div>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="form-group">
+              <label class="form-label" for="telefono">Teléfono de Contacto</label>
+              <input type="text" id="telefono" class="form-control" placeholder="Ej: 0414-1234567 o 0251-5551234">
+            </div>
+
+            <!-- Correo Electrónico -->
+            <div class="form-group">
+              <label class="form-label" for="correo">Correo Electrónico</label>
+              <input type="email" id="correo" class="form-control" placeholder="docente@ejemplo.com">
+            </div>
+
+            <!-- Fecha de Nacimiento con Día, Mes, Año -->
+            <div class="form-group">
+              <label class="form-label" for="fechaNacimiento">
+                <span>Fecha de Nacimiento <span class="helper">(Día, Mes, Año)</span></span>
+                <span id="edadCalculada" style="font-weight: bold; color: var(--primary);"></span>
+              </label>
+              <input type="date" id="fechaNacimiento" class="form-control">
+            </div>
+
+            <!-- Dirección de Habitación -->
+            <div class="form-group span-full">
+              <label class="form-label" for="direccion">Dirección de Habitación Completa</label>
+              <input type="text" id="direccion" class="form-control" placeholder="Calle, Carrera, Av., N° de casa/apto, Sector, Ciudad o Población">
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 2: FORMACIÓN ACADÉMICA -->
+        <div class="card-box">
+          <div class="card-title">
+            <span class="icon">🎓</span>
+            <span>Nivel Académico y Formación Universitaria</span>
+          </div>
+
+          <div class="form-grid">
+            <!-- Título de Pregrado -->
+            <div class="form-group span-2">
+              <label class="form-label" for="tituloPregrado">
+                <span>Título Universitario de Pregrado <span class="helper">(Si lo tiene)</span></span>
+              </label>
+              <input type="text" id="tituloPregrado" class="form-control" placeholder="Ej: Lic. en Educación Integral, Ing. en Sistemas, T.S.U. en Administración...">
+            </div>
+
+            <!-- Estudios de Postgrado -->
+            <div class="form-group span-2">
+              <label class="form-label" for="postgrado">
+                <span>Estudios de Postgrado <span class="helper">(Si lo tiene - Especialidad, Maestría, Doctorado)</span></span>
+              </label>
+              <input type="text" id="postgrado" class="form-control" placeholder="Ej: Especialista en Planificación, Magíster en Gerencia Educativa...">
+            </div>
+
+            <!-- Opción Bachiller -->
+            <div class="form-group span-full">
+              <label class="checkbox-card" for="esBachiller">
+                <input type="checkbox" id="esBachiller">
+                <div>
+                  <strong>Bachiller de la República (en caso de no poseer título universitario)</strong>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">
+                    Marque esta casilla si la persona no cuenta con título universitario y posee nivel de bachiller.
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 3: CATEGORÍA DEL PERSONAL (3 APARTADOS) -->
+        <div class="card-box">
+          <div class="card-title">
+            <span class="icon">💼</span>
+            <span>Categoría y Datos Laborales del Personal</span>
+          </div>
+
+          <!-- Selector de las 3 Categorías -->
+          <div class="category-picker-wrapper">
+            <label class="form-label" style="margin-bottom: 0.75rem;">
+              Seleccione la Categoría Correspondiente: <span class="required">*</span>
+            </label>
+            <div class="category-options">
+              <label class="cat-radio-label selected" for="cat_docente">
+                <input type="radio" name="categoria" id="cat_docente" value="docente" checked>
+                <div>
+                  <div class="cat-title">1. DOCENTE</div>
+                  <div class="cat-desc">Nivel 1 al 5, código, cargo directivo/coordinador/aula</div>
+                </div>
+              </label>
+
+              <label class="cat-radio-label" for="cat_admin">
+                <input type="radio" name="categoria" id="cat_admin" value="administrativo">
+                <div>
+                  <div class="cat-title">2. ADMINISTRATIVO</div>
+                  <div class="cat-desc">Nivel personalizable, área de desempeño</div>
+                </div>
+              </label>
+
+              <label class="cat-radio-label" for="cat_obrero">
+                <input type="radio" name="categoria" id="cat_obrero" value="obrero">
+                <div>
+                  <div class="cat-title">3. OBREROS</div>
+                  <div class="cat-desc">Nivel asignado, área de servicios y mantenimiento</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- DATOS GENERALES DE INGRESO Y SERVICIO (Común para las 3 categorías) -->
+          <div class="form-grid" style="margin-bottom: 1.25rem;">
+            <!-- Año / Fecha de Ingreso -->
+            <div class="form-group">
+              <label class="form-label" for="fechaIngreso">
+                <span>Año o Fecha de Ingreso a la Institución <span class="required">*</span></span>
+              </label>
+              <input type="date" id="fechaIngreso" class="form-control" required value="2018-09-15">
+            </div>
+
+            <!-- Años de Servicio Calculados Automáticamente -->
+            <div class="form-group span-2">
+              <label class="form-label" for="aniosServicioCalculados">
+                <span>Años de Servicio <span class="helper">(Se actualiza automáticamente en tiempo real)</span></span>
+              </label>
+              <input type="text" id="aniosServicioCalculados" class="form-control highlight-calc" readonly value="Calculando...">
+            </div>
+
+            <!-- Condición / Estatus -->
+            <div class="form-group">
+              <label class="form-label" for="condicion">Condición Laboral Actual</label>
+              <select id="condicion" class="form-control">
+                <option value="Activo">Activo</option>
+                <option value="De Reposo">De Reposo</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ================= APARTADO 1: DOCENTE ================= -->
+          <div id="panelDocente" class="dynamic-category-panel">
+            <div class="dynamic-panel-header">
+              <span>📋 Especificaciones del Personal DOCENTE</span>
+            </div>
+            <div class="form-grid">
+              <!-- Código -->
+              <div class="form-group">
+                <label class="form-label" for="docCodigo">Código de Cargo / RAC</label>
+                <input type="text" id="docCodigo" class="form-control" placeholder="Ej: 0104-5829 o N° de Nómina">
+              </div>
+
+              <!-- Nivel (1, 2, 3, 4, 5) -->
+              <div class="form-group">
+                <label class="form-label" for="docNivel">Nivel Docente</label>
+                <select id="docNivel" class="form-control">
+                  <option value="1">Nivel 1 (Docente I)</option>
+                  <option value="2">Nivel 2 (Docente II)</option>
+                  <option value="3">Nivel 3 (Docente III)</option>
+                  <option value="4">Nivel 4 (Docente IV)</option>
+                  <option value="5">Nivel 5 (Docente V)</option>
+                </select>
+              </div>
+
+              <!-- Cargo -->
+              <div class="form-group">
+                <label class="form-label" for="docCargo">Cargo que Desempeña</label>
+                <select id="docCargo" class="form-control">
+                  <option value="Docente de Aula">Docente de Aula</option>
+                  <option value="Directivo">Directivo (Director / Subdirector)</option>
+                  <option value="Coordinador">Coordinador (Pedagógico / Seccional / Especialidad)</option>
+                </select>
+              </div>
+
+              <!-- Área de trabajo -->
+              <div class="form-group span-full">
+                <label class="form-label" for="docArea">Área de Trabajo / Asignatura / Grado en que Trabaja</label>
+                <input type="text" id="docArea" class="form-control" placeholder="Ej: Educación Inicial, Primaria (3er Grado), Cs. Sociales, Matemática, Biología, etc.">
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= APARTADO 2: ADMINISTRATIVO ================= -->
+          <div id="panelAdmin" class="dynamic-category-panel" style="display: none; border-left-color: #d97706;">
+            <div class="dynamic-panel-header" style="color: #92400e;">
+              <span>📋 Especificaciones del Personal ADMINISTRATIVO</span>
+            </div>
+            <div class="form-grid">
+              <!-- Nivel para ser rellenado -->
+              <div class="form-group">
+                <label class="form-label" for="adminNivel">Nivel Administrativo <span class="helper">(Para ser rellenado)</span></label>
+                <input type="text" id="adminNivel" class="form-control" placeholder="Ej: Asistente I, Administrador II, Secretaria Ejecutiva, etc.">
+              </div>
+
+              <!-- Área de trabajo especificando -->
+              <div class="form-group span-2">
+                <label class="form-label" for="adminArea">Área de Trabajo en que Trabaja Especificando</label>
+                <input type="text" id="adminArea" class="form-control" placeholder="Ej: Control de Estudios, Secretaría General, Recursos Humanos, Biblioteca...">
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= APARTADO 3: OBREROS ================= -->
+          <div id="panelObrero" class="dynamic-category-panel" style="display: none; border-left-color: #475569;">
+            <div class="dynamic-panel-header" style="color: #334155;">
+              <span>📋 Especificaciones del Personal OBRERO</span>
+            </div>
+            <div class="form-grid">
+              <!-- Nivel para ser rellenado -->
+              <div class="form-group">
+                <label class="form-label" for="obreroNivel">Nivel Obrero <span class="helper">(Para ser rellenado)</span></label>
+                <input type="text" id="obreroNivel" class="form-control" placeholder="Ej: Obrero I, Obrero II, Vigilante, Maestro de Obra, etc.">
+              </div>
+
+              <!-- Área de trabajo especificando -->
+              <div class="form-group span-2">
+                <label class="form-label" for="obreroArea">Área de Trabajo en que Trabaja Especificando</label>
+                <input type="text" id="obreroArea" class="form-control" placeholder="Ej: Mantenimiento de Aulas, Portería / Vigilancia, Áreas Verdes, Cocina...">
+              </div>
+            </div>
+          </div>
+
+          <!-- Observaciones opcionales -->
+          <div class="form-group span-full" style="margin-top: 1rem;">
+            <label class="form-label" for="observaciones">Observaciones o Notas Adicionales de la Ficha</label>
+            <input type="text" id="observaciones" class="form-control" placeholder="Cualquier información adicional para la constancia o expediente">
+          </div>
+        </div>
+
+        <!-- ============================================================= -->
+        <!-- SECCIÓN 4: EXPEDIENTE DIGITAL Y DOCUMENTOS PROBATORIOS -->
+        <!-- ============================================================= -->
+        <div class="card-box">
+          <div class="card-title">
+            <span class="icon">📁</span>
+            <span>Expediente Digital y Documentos Probatorios</span>
+            <span class="helper" style="margin-left: auto; font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">
+              Almacenamiento permanente en IndexedDB (archivos PDF o Imágenes JPG/PNG)
+            </span>
+          </div>
+
+          <div class="expediente-grid">
+            <!-- Columna: Fotografía Tipo Carnet -->
+            <div class="carnet-photo-card">
+              <div class="carnet-photo-box" id="carnetPhotoBox">
+                <img id="carnetPhotoPreview" src="" alt="Fotografía tipo carnet" style="display: none;">
+                <div class="carnet-photo-placeholder" id="carnetPhotoPlaceholder">
+                  <span class="icon" style="font-size: 2.5rem;">👤</span>
+                  <span>Fotografía Tipo Carnet</span>
+                  <span style="font-size: 0.72rem; color: #94a3b8;">(Frontal, fondo claro)</span>
+                </div>
+              </div>
+              <div class="carnet-photo-actions">
+                <button type="button" class="btn btn-primary btn-sm" id="btnUploadCarnet">
+                  📷 Subir Foto
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" id="btnRemoveCarnet" style="display: none;">
+                  🗑️ Quitar
+                </button>
+                <input type="file" id="inputCarnetPhoto" accept="image/*" style="display: none;">
+              </div>
+            </div>
+
+            <!-- Columna: 4 Cajas de Documentos Probatorios -->
+            <div class="docs-cards-grid">
+              
+              <!-- 1. CÉDULA DE IDENTIDAD -->
+              <div class="doc-upload-box" id="box_cedulaDoc">
+                <div class="doc-box-header">
+                  <div class="doc-title-row">
+                    <span class="doc-icon">🪪</span>
+                    <strong>Cédula de Identidad</strong>
+                  </div>
+                  <span class="doc-status-badge pending" id="status_cedulaDoc">⚪ Sin adjuntar</span>
+                </div>
+                <div class="doc-info-row" id="info_cedulaDoc" style="display: none;">
+                  <span class="doc-file-name" id="name_cedulaDoc">archivo.pdf</span>
+                  <span class="doc-file-size" id="size_cedulaDoc">0 KB</span>
+                </div>
+                <div class="doc-actions-row">
+                  <button type="button" class="btn btn-secondary btn-sm btn-upload-trigger" data-doctype="cedulaDoc">
+                    📤 Adjuntar Archivo
+                  </button>
+                  <button type="button" class="btn btn-primary btn-sm btn-view-doc" data-doctype="cedulaDoc" id="btnView_cedulaDoc" style="display: none;">
+                    👁️ Ver
+                  </button>
+                  <button type="button" class="btn btn-success btn-sm btn-download-doc" data-doctype="cedulaDoc" id="btnDl_cedulaDoc" style="display: none;">
+                    📥 Descargar
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm btn-delete-doc" data-doctype="cedulaDoc" id="btnDel_cedulaDoc" style="display: none;">
+                    🗑️
+                  </button>
+                  <input type="file" class="doc-file-input" data-doctype="cedulaDoc" accept="application/pdf,image/*" style="display: none;">
+                </div>
+              </div>
+
+              <!-- 2. TÍTULO DE BACHILLER / UNIVERSITARIO / POSTGRADO -->
+              <div class="doc-upload-box" id="box_tituloDoc">
+                <div class="doc-box-header">
+                  <div class="doc-title-row">
+                    <span class="doc-icon">🎓</span>
+                    <strong>Título (Bachiller / Universitario / Postgrado)</strong>
+                  </div>
+                  <span class="doc-status-badge pending" id="status_tituloDoc">⚪ Sin adjuntar</span>
+                </div>
+                <div class="doc-info-row" id="info_tituloDoc" style="display: none;">
+                  <span class="doc-file-name" id="name_tituloDoc">titulo.pdf</span>
+                  <span class="doc-file-size" id="size_tituloDoc">0 KB</span>
+                </div>
+                <div class="doc-actions-row">
+                  <button type="button" class="btn btn-secondary btn-sm btn-upload-trigger" data-doctype="tituloDoc">
+                    📤 Adjuntar Archivo
+                  </button>
+                  <button type="button" class="btn btn-primary btn-sm btn-view-doc" data-doctype="tituloDoc" id="btnView_tituloDoc" style="display: none;">
+                    👁️ Ver
+                  </button>
+                  <button type="button" class="btn btn-success btn-sm btn-download-doc" data-doctype="tituloDoc" id="btnDl_tituloDoc" style="display: none;">
+                    📥 Descargar
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm btn-delete-doc" data-doctype="tituloDoc" id="btnDel_tituloDoc" style="display: none;">
+                    🗑️
+                  </button>
+                  <input type="file" class="doc-file-input" data-doctype="tituloDoc" accept="application/pdf,image/*" style="display: none;">
+                </div>
+              </div>
+
+              <!-- 3. RECIBO DE PAGO -->
+              <div class="doc-upload-box" id="box_reciboPago">
+                <div class="doc-box-header">
+                  <div class="doc-title-row">
+                    <span class="doc-icon">🧾</span>
+                    <strong>Recibo de Pago / Comprobante MPPE</strong>
+                  </div>
+                  <span class="doc-status-badge pending" id="status_reciboPago">⚪ Sin adjuntar</span>
+                </div>
+                <div class="doc-info-row" id="info_reciboPago" style="display: none;">
+                  <span class="doc-file-name" id="name_reciboPago">recibo.pdf</span>
+                  <span class="doc-file-size" id="size_reciboPago">0 KB</span>
+                </div>
+                <div class="doc-actions-row">
+                  <button type="button" class="btn btn-secondary btn-sm btn-upload-trigger" data-doctype="reciboPago">
+                    📤 Adjuntar Archivo
+                  </button>
+                  <button type="button" class="btn btn-primary btn-sm btn-view-doc" data-doctype="reciboPago" id="btnView_reciboPago" style="display: none;">
+                    👁️ Ver
+                  </button>
+                  <button type="button" class="btn btn-success btn-sm btn-download-doc" data-doctype="reciboPago" id="btnDl_reciboPago" style="display: none;">
+                    📥 Descargar
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm btn-delete-doc" data-doctype="reciboPago" id="btnDel_reciboPago" style="display: none;">
+                    🗑️
+                  </button>
+                  <input type="file" class="doc-file-input" data-doctype="reciboPago" accept="application/pdf,image/*" style="display: none;">
+                </div>
+              </div>
+
+              <!-- 4. CONSTANCIA DE TRABAJO -->
+              <div class="doc-upload-box" id="box_constanciaTrabajo">
+                <div class="doc-box-header">
+                  <div class="doc-title-row">
+                    <span class="doc-icon">📑</span>
+                    <strong>Constancia de Trabajo</strong>
+                  </div>
+                  <span class="doc-status-badge pending" id="status_constanciaTrabajo">⚪ Sin adjuntar</span>
+                </div>
+                <div class="doc-info-row" id="info_constanciaTrabajo" style="display: none;">
+                  <span class="doc-file-name" id="name_constanciaTrabajo">constancia.pdf</span>
+                  <span class="doc-file-size" id="size_constanciaTrabajo">0 KB</span>
+                </div>
+                <div class="doc-actions-row">
+                  <button type="button" class="btn btn-secondary btn-sm btn-upload-trigger" data-doctype="constanciaTrabajo">
+                    📤 Adjuntar Archivo
+                  </button>
+                  <button type="button" class="btn btn-primary btn-sm btn-view-doc" data-doctype="constanciaTrabajo" id="btnView_constanciaTrabajo" style="display: none;">
+                    👁️ Ver
+                  </button>
+                  <button type="button" class="btn btn-success btn-sm btn-download-doc" data-doctype="constanciaTrabajo" id="btnDl_constanciaTrabajo" style="display: none;">
+                    📥 Descargar
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm btn-delete-doc" data-doctype="constanciaTrabajo" id="btnDel_constanciaTrabajo" style="display: none;">
+                    🗑️
+                  </button>
+                  <input type="file" class="doc-file-input" data-doctype="constanciaTrabajo" accept="application/pdf,image/*" style="display: none;">
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Acciones de Formulario -->
+        <div class="card-box" style="padding: 1rem 1.5rem;">
+          <div class="form-actions-bar" style="border-top: none; padding-top: 0;">
+            <button type="button" id="btnCancelEdit" class="btn btn-secondary" style="display: none;">
+              ✖ Cancelar Edición
+            </button>
+            <button type="submit" id="btnSubmitForm" class="btn btn-secondary">
+              💾 Guardar Registro y Expediente
+            </button>
+            <button type="button" id="btnSaveAndPreview" class="btn btn-primary">
+              🖨️ Guardar y Generar Ficha Carta / PDF
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PESTAÑA 2: DIRECTORIO DE PERSONAL (NÓMINA) -->
+    <!-- ========================================== -->
+    <div id="tab-directorio" class="tab-pane">
+      <div class="card-box">
+        <div class="card-title">
+          <span class="icon">📋</span>
+          <span>Nómina y Directorio Institucional de Personal</span>
+        </div>
+
+        <!-- Barra de Búsqueda y Filtros -->
+        <div class="filter-bar">
+          <div class="search-box-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchQuery" class="form-control" placeholder="Buscar por Cédula, Nombres, Apellidos, Área o Cargo...">
+          </div>
+
+          <div class="filter-actions">
+            <select id="filterCategory" class="form-control" style="width: auto;">
+              <option value="todos">Todas las Categorías</option>
+              <option value="docente">Docentes</option>
+              <option value="administrativo">Administrativos</option>
+              <option value="obrero">Obreros</option>
+            </select>
+
+            <select id="filterCondition" class="form-control" style="width: auto;">
+              <option value="todos">Todos los Estados</option>
+              <option value="Activo">Activos</option>
+              <option value="De Reposo">De Reposo</option>
+            </select>
+
+            <button type="button" id="btnExportExcel" class="btn btn-success btn-sm" title="Descargar en formato Excel / CSV">
+              📥 Exportar Excel (CSV)
+            </button>
+            <button type="button" id="btnExportBackup" class="btn btn-secondary btn-sm" title="Guardar copia de seguridad en archivo JSON">
+              💾 Respaldo JSON
+            </button>
+            <button type="button" id="btnImportBackup" class="btn btn-secondary btn-sm" title="Restaurar copia de seguridad">
+              📂 Cargar Respaldo
+            </button>
+            <input type="file" id="fileBackupInput" accept=".json" style="display: none;">
+          </div>
+        </div>
+
+        <div id="directorioStats" style="font-size: 0.85rem; color: #475569; margin-bottom: 0.75rem;"></div>
+
+        <!-- Tabla de Registros -->
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Cédula</th>
+                <th>Funcionario / Contacto</th>
+                <th>Categoría</th>
+                <th>Cargo / Función y Área</th>
+                <th>Años de Servicio</th>
+                <th>Expediente</th>
+                <th>Condición</th>
+                <th style="text-align: center;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="directoryTableBody">
+              <!-- Inyectado por JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL / VISOR DE LA FICHA TÉCNICA EN HOJA TAMAÑO CARTA (IMPRIMIBLE/PDF) -->
+  <!-- ====================================================================== -->
+  <div id="previewModal" class="preview-modal-overlay">
+    <!-- Barra superior de control del visor (No se imprime) -->
+    <div class="preview-toolbar no-print">
+      <div class="preview-toolbar-title">
+        <span>📄 Vista Previa de Ficha Técnica (Hoja Carta)</span>
+        <div id="previewPersonName" style="font-size: 0.82rem; font-weight: normal; color: #475569;"></div>
+      </div>
+      <div class="preview-toolbar-actions">
+        <button type="button" id="btnPrintSheet" class="btn btn-primary">
+          🖨️ Imprimir / Guardar en PDF (Tamaño Carta)
+        </button>
+        <button type="button" id="btnEditFromPreview" class="btn btn-secondary">
+          ✏️ Modificar Datos
+        </button>
+        <button type="button" id="btnCloseModal" class="btn btn-danger">
+          ✖ Cerrar
+        </button>
+      </div>
+    </div>
+
+    <!-- CONTENIDO ESTRICTO DE LA HOJA TAMAÑO CARTA -->
+    <div id="letterSheetContent" class="letter-sheet">
+      <!-- Se inyecta dinámicamente con app.js -->
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL / VISOR DE DOCUMENTOS PROBATORIOS (IMAGEN / PDF) -->
+  <!-- ====================================================================== -->
+  <div id="docViewerModal" class="preview-modal-overlay">
+    <div class="preview-toolbar no-print">
+      <div class="preview-toolbar-title">
+        <span id="docViewerTitle">Visualizador de Documento</span>
+        <div id="docViewerSubtitle" style="font-size: 0.8rem; color: #475569;"></div>
+      </div>
+      <div class="preview-toolbar-actions">
+        <button type="button" class="btn btn-success btn-sm" id="btnDocViewerDownload">
+          📥 Descargar Archivo
+        </button>
+        <button type="button" class="btn btn-danger btn-sm" id="btnDocViewerClose">
+          ✖ Cerrar
+        </button>
+      </div>
+    </div>
+    <div class="doc-viewer-container" id="docViewerContainer">
+      <!-- Se inyecta la imagen o el iframe del PDF -->
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="assets/logo_base64.js"></script>
+  <script src="db.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
